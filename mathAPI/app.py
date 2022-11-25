@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify, send_file
 
 import os
-import math
+
 
 # init app
+
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -62,24 +63,30 @@ def percentile():
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    file_name = basedir+"\/tmp\ok.txt"
+    file_name = basedir+"/tmp/ok.txt"
+    print("/ping request: " + str(os.path.isfile(file_name)))
     if os.path.isfile(file_name):
         return "OK", 200
     else:
-        return "Service unavailable", 503
+        return file_name, 503
 
 
 @app.route('/img', methods=['GET'])
 def img():
-    file_name = basedir+"\/tmp\giphy.gif"
-    log_file = basedir+"\log\log.txt"
-    f = open(log_file, "a")
-    f.write(str({'ip': request.remote_addr, "request": str(request)}))
-    f.close()
+    file_name = basedir+"/tmp/giphy.gif"
+    log_file = basedir+"/log/log.txt"
+    print(os.path.isfile(file_name))
+    try:
+        f = open(log_file, "a")
+        f.write(str({'ip': request.remote_addr, "request": str(request)}))
+        f.close()
+    except:
+        print("cannot log the files")
+    
     if os.path.isfile(file_name):
         return send_file(file_name, mimetype='image/gif')
 
 
 # run server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3001)
